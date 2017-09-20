@@ -29,7 +29,11 @@ void laser_bcs::set_param(const domain_param* dp, const laser_param* lp) {
 #pragma omp parallel for schedule(static)
 #endif
   for(size_t i = 0; i < tmp1.size(); i++) {
-    tmp1[i] = (i < half_nt) ? i : 0;
+    if(this->laser->direction == 1) {
+      tmp1[i] = (i < half_nt) ? i : 0;
+    } else {
+      tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
+    }
   }
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)

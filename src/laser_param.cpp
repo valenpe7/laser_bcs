@@ -3,11 +3,11 @@
 #include "inc/laser_param.hpp"
 #include "inc/global.hpp"
 
-laser_param::laser_param(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int id) {
-	this->set_values(t_start, t_end, fwhm_time, t_0, x_0, y_0, omega, amp, w_0, id);
+laser_param::laser_param(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int direction, int id) {
+	this->set_values(t_start, t_end, fwhm_time, t_0, x_0, y_0, omega, amp, w_0, direction, id);
 }
 
-void laser_param::set_values(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int id) {
+void laser_param::set_values(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int direction, int id) {
 	if(t_start > t_end || fwhm_time < 0 || omega < 0 || amp < 0 || w_0 < 2.0 * constants::c / omega) {
 		std::cerr << "error: bad value" << std::endl;
 		return;
@@ -21,5 +21,6 @@ void laser_param::set_values(double t_start, double t_end, double fwhm_time, dou
 	this->omega = omega;
 	this->amp = amp;
 	this->w_0 = w_0;
+  this->direction = direction;
 	this->id = id;
 }
