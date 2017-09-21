@@ -28,7 +28,6 @@ namespace fft {
 }
 
 namespace tools {
-	void convert_binary(std::string filename, std::array<int, 3> size);
 	void multiply_array(array_3d<complex>& field, const double scalar);
 	std::vector<complex> slice_to_vec(view_2d slice);
 	void vec_to_slice(view_2d& slice, std::vector<complex> vec);

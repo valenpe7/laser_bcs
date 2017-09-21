@@ -32,27 +32,6 @@ void fft::destroy_plan() {
 	fftw_destroy_plan(plan);
 }
 
-void tools::convert_binary(std::string filename, std::array<int, 3> size) {
-	double num;
-	std::ifstream in(filename + ".dat", std::ios::binary);
-	std::ofstream out(filename + "_ascii.dat", std::ios::out);
-	if(out) {
-		for(auto k = 0; k < size[2]; k++) {
-			for(auto j = 0; j < size[1]; j++) {
-				for(auto i = 0; i < size[0]; i++) {
-					in.read(reinterpret_cast<char*>(&num), sizeof(num)).gcount() == sizeof(num);
-					if(in) {
-						out << num << " ";
-					}
-				}
-			}
-		}
-		out.close();
-	} else {
-		std::cerr << "Error: cannot open file " << filename << std::endl;
-	}
-}
-
 void tools::multiply_array(array_3d<complex>& field, const double scalar) {
 	for(size_t i = 0; i < field.num_elements(); i++) {
 		field.data()[i] *= scalar;
