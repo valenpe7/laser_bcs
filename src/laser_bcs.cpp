@@ -28,7 +28,7 @@ void laser_bcs::set_param(const domain_param* dp, const laser_param* lp) {
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
-  for(size_t i = 0; i < tmp1.size(); i++) {
+  for(auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
     if(this->laser->direction == 1) {
       tmp1[i] = (i < half_nt) ? i : 0;
     } else {
@@ -38,13 +38,13 @@ void laser_bcs::set_param(const domain_param* dp, const laser_param* lp) {
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
- for(size_t i = 0; i < tmp2.size(); i++) {
+ for(auto i = 0; i < static_cast<int>(tmp2.size()); i++) {
     tmp2[i] = (i < half_nx) ? i : i - 2 * half_nx;
   }
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
- for(size_t i = 0; i < tmp3.size(); i++) {
+ for(auto i = 0; i < static_cast<int>(tmp3.size()); i++) {
     tmp3[i] = (i < half_ny) ? i : i - 2 * half_ny;
   }
 	this->omega.resize(this->domain->nt);

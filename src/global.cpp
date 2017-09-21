@@ -14,12 +14,12 @@ std::vector<complex> fft::data;
 
 void fft::create_plan_1d(int dim_1, int sign) {
 	data.resize(dim_1);
-	plan = fftw_plan_dft_1d(data.size(), reinterpret_cast<fftw_complex*>(data.data()), reinterpret_cast<fftw_complex*>(data.data()), sign, FFTW_ESTIMATE);
+	plan = fftw_plan_dft_1d(data.size(), reinterpret_cast<fftw_complex*>(data.data()), reinterpret_cast<fftw_complex*>(data.data()), sign, FFTW_MEASURE);
 }
 
 void fft::create_plan_2d(int dim_1, int dim_2, int sign) {
 	data.resize(dim_1 * dim_2);
-	plan = fftw_plan_dft_2d(dim_1, dim_2, reinterpret_cast<fftw_complex*>(data.data()), reinterpret_cast<fftw_complex*>(data.data()), sign, FFTW_ESTIMATE);
+	plan = fftw_plan_dft_2d(dim_1, dim_2, reinterpret_cast<fftw_complex*>(data.data()), reinterpret_cast<fftw_complex*>(data.data()), sign, FFTW_MEASURE);
 }
 
 std::vector<complex> fft::execute_plan(std::vector<complex> in) {
