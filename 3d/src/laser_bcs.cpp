@@ -92,7 +92,7 @@ void laser_bcs::prescribe_field_at_focus(array_3d<complex>& field) const {
 		for(auto j = 0; j < this->domain->ny; j++) {
 			for(auto k = 0; k < this->domain->nt; k++) {
 				if((this->domain->t_coord[k] - this->domain->time_shift) >= this->laser->t_start && (this->domain->t_coord[k] - this->domain->time_shift) <= this->laser->t_end) {
-					field[i][j][k] = {this->laser->amp * exp(
+					field[i][j][k] = {this->laser->amplitude * exp(
 						- pow((this->domain->x_coord[i] - this->laser->x_0) / this->laser->w_0, 2)
 						- pow((this->domain->y_coord[j] - this->laser->y_0) / this->laser->w_0, 2)
 						- pow((this->domain->t_coord[k] - this->laser->t_0 - this->domain->time_shift) * (2.0 * sqrt(log(2.0)))
