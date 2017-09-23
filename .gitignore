@@ -1,4 +1,6 @@
-lib/
+compile.sh
+modules
 cmake_install.cmake
 CMakeFiles/
+CMakeCache.txt
 Makefile
