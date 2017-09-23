@@ -37,6 +37,8 @@ else()
 endif()
 
 option(OPENMP "Enable multithreading using OpenMP directives." OFF)
+option(LBCS_2D "Compile 2D version." ON)
+option(LBCS_3D "Compile 3D version." ON)
 
 if(OPENMP)
   message(STATUS "Option 'OPENMP' enabled")
@@ -51,5 +53,10 @@ if(OPENMP)
   endif()
 endif()
 
-add_subdirectory(2d)
-add_subdirectory(3d)
+if(LBCS_2D)
+  add_subdirectory(2d)
+endif()
+
+if(LBCS_3D)
+  add_subdirectory(3d)
+endif()
