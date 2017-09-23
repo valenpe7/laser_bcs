@@ -20,13 +20,13 @@ INTERFACE
   
   END SUBROUTINE compute_laser_at_boundary
   
-  SUBROUTINE populate_laser_at_boundary(buffer, laser_id, output_path, timestep, size_global, first, last) bind(c)
+  SUBROUTINE populate_laser_at_boundary(buffer, laser_id, output_path, field, timestep, size_global, first, last) bind(c)
     
     USE, INTRINSIC :: iso_c_binding
     IMPLICIT NONE
     
     INTEGER(c_int), INTENT(IN) :: laser_id, timestep, size_global, first, last
-    CHARACTER(kind=c_char), DIMENSION(*), INTENT(IN) :: output_path
+    CHARACTER(kind=c_char), DIMENSION(*), INTENT(IN) :: output_path, field
     REAL(c_double), DIMENSION(*), INTENT(OUT) :: buffer
   
   END SUBROUTINE populate_laser_at_boundary
@@ -87,7 +87,7 @@ CONTAINS
     INTEGER, INTENT(IN) :: laser_id
 
     CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, &
-      step, ny_global, ny_global_min, ny_global_max)
+      "e_x"//C_NULL_CHAR, step, ny_global, ny_global_min, ny_global_max)
 
   END SUBROUTINE get_source_x_boundary
   
@@ -97,7 +97,7 @@ CONTAINS
     INTEGER, INTENT(IN) :: laser_id
 
     CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, &
-      step, nx_global, nx_global_min, nx_global_max)
+      "e_x"//C_NULL_CHAR, step, nx_global, nx_global_min, nx_global_max)
 
   END SUBROUTINE get_source_y_boundary
 

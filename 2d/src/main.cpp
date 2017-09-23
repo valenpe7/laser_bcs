@@ -46,7 +46,7 @@ void populate_laser_at_boundary(double* buffer, int* id, const char* data_dir, c
 	std::string path(data_dir);
 	std::string name(field);
 	std::ifstream in;
-	in.open(path + name + laser_id + ".raw", std::ios::binary);
+	in.open(path + name + "_" + laser_id + ".raw", std::ios::binary);
 	if(in.is_open()) {
 		in.seekg(((*timestep) * (*size_global) + (*first) - 1) * sizeof(num));
 		for(auto i = 0; i < *last - *first + 1; i++) {
@@ -55,6 +55,6 @@ void populate_laser_at_boundary(double* buffer, int* id, const char* data_dir, c
 		}
 		in.close();
 	} else {
-		std::cout << "error: cannot read file " << path + name + laser_id + ".raw" << std::endl;
+		std::cout << "error: cannot read file " << path + name + "_" + laser_id + ".raw" << std::endl;
 	}
 }

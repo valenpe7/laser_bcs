@@ -23,7 +23,7 @@ INTERFACE
   
   END SUBROUTINE compute_laser_at_boundary
   
-  SUBROUTINE populate_laser_at_boundary(field, laser_id, output_path, timestep, horizontal_global, &
+  SUBROUTINE populate_laser_at_boundary(field, laser_id, output_path, field, timestep, horizontal_global, &
       vertical_global, horizontal_first, horizontal_last, vertical_first, vertical_last) bind(c)
     
     USE, INTRINSIC :: iso_c_binding
@@ -31,7 +31,7 @@ INTERFACE
     
     INTEGER(c_int), INTENT(IN) :: laser_id, timestep, horizontal_global, vertical_global, &
       horizontal_first, horizontal_last, vertical_first, vertical_last
-    CHARACTER(kind=c_char), DIMENSION(*), INTENT(IN) :: output_path
+    CHARACTER(kind=c_char), DIMENSION(*), INTENT(IN) :: output_path, field
     REAL(c_double), DIMENSION(*), INTENT(OUT) :: field
   
   END SUBROUTINE populate_laser_at_boundary
@@ -109,7 +109,7 @@ CONTAINS
     REAL(num), DIMENSION(:,:), INTENT(INOUT) :: buffer
     INTEGER, INTENT(IN) :: laser_id
 
-    CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, &
+    CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, "e_x"//C_NULL_CHAR, &
       step, ny_global, nz_global, ny_global_min, ny_global_max, nz_global_min, nz_global_max)
 
   END SUBROUTINE get_source_x_boundary
@@ -119,7 +119,7 @@ CONTAINS
     REAL(num), DIMENSION(:,:), INTENT(INOUT) :: buffer
     INTEGER, INTENT(IN) :: laser_id
 
-    CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, &
+    CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, "e_x"//C_NULL_CHAR, &
       step, nx_global, nz_global, nx_global_min, nx_global_max, nz_global_min, nz_global_max)
 
   END SUBROUTINE get_source_y_boundary
@@ -129,7 +129,7 @@ CONTAINS
     REAL(num), DIMENSION(:,:), INTENT(INOUT) :: buffer
     INTEGER, INTENT(IN) :: laser_id
 
-    CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, &
+    CALL populate_laser_at_boundary(buffer, laser_id, TRIM(data_dir)//C_NULL_CHAR, "e_x"//C_NULL_CHAR, &
       step, nx_global, ny_global, nx_global_min, nx_global_max, ny_global_min, ny_global_max)
 
   END SUBROUTINE get_source_z_boundary
