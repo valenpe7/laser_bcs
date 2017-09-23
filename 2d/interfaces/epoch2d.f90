@@ -1,4 +1,4 @@
-MODULE focusing
+MODULE tight_focusing
 
   USE shared_data
   USE, INTRINSIC :: iso_c_binding
@@ -102,4 +102,4 @@ CONTAINS
   END SUBROUTINE get_source_y_boundary
 
 
-END MODULE focusing
+END MODULE tight_focusing
