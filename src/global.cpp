@@ -32,30 +32,63 @@ void fft::destroy_plan() {
 	fftw_destroy_plan(plan);
 }
 
+void tools::multiply_array(array_2d<complex>& field, const double scalar) {
+	for(size_t i = 0; i < field.num_elements(); i++) {
+		field.data()[i] *= scalar;
+	}
+}
+
 void tools::multiply_array(array_3d<complex>& field, const double scalar) {
 	for(size_t i = 0; i < field.num_elements(); i++) {
 		field.data()[i] *= scalar;
 	}
 }
 
-std::vector<complex> tools::slice_to_vec(view_2d slice) {
+std::vector<complex> tools::array_to_vec(view_1d view) {
 	size_t counter = 0;
-	std::vector<complex> vec(slice.shape()[0] * slice.shape()[1]);
-	for(size_t i = 0; i < slice.shape()[0]; i++) {
-		for(size_t j = 0; j < slice.shape()[1]; j++) {
-			vec[counter++] = slice[i][j];
+	std::vector<complex> vec(view.shape()[0]);
+	for(size_t i = 0; i < view.shape()[0]; i++) {
+		vec[counter++] = view[i];
+	}
+	return vec;
+}
+
+std::vector<complex> tools::array_to_vec(view_2d view) {
+	size_t counter = 0;
+	std::vector<complex> vec(view.shape()[0] * view.shape()[1]);
+	for(size_t i = 0; i < view.shape()[0]; i++) {
+		for(size_t j = 0; j < view.shape()[1]; j++) {
+			vec[counter++] = view[i][j];
 		}
 	}
 	return vec;
 }
 
-void tools::vec_to_slice(view_2d& slice, std::vector<complex> vec) {
+void tools::vec_to_array(view_1d& view, std::vector<complex> vec) {
 	size_t counter = 0;
-	for(size_t i = 0; i < slice.shape()[0]; i++) {
-		for(size_t j = 0; j < slice.shape()[1]; j++) {
-			slice[i][j] = vec[counter++];
+	for(size_t i = 0; i < view.shape()[0]; i++) {
+		view[i] = vec[counter++];
+	}
+}
+
+void tools::vec_to_array(view_2d& view, std::vector<complex> vec) {
+	size_t counter = 0;
+	for(size_t i = 0; i < view.shape()[0]; i++) {
+		for(size_t j = 0; j < view.shape()[1]; j++) {
+			view[i][j] = vec[counter++];
 		}
 	}
+}
+
+std::vector<double> tools::get_real(array_2d<complex> field, std::array<int, 2> size) {
+	std::vector<double> real_part(size[0] * size[1]);
+	size_t counter = 0;
+	for(auto j = 0; j < size[1]; j++) {
+		for(auto i = 0; i < size[0]; i++) {
+			real_part[counter++] = std::real(field[i][j]);
+		}
+	}
+	return real_part;
 }
 
 std::vector<double> tools::get_real(array_3d<complex> field, std::array<int, 3> size) {

@@ -2,18 +2,13 @@
 #include <cmath>
 #include <mpi.h>
 
-#include "inc/domain_param.hpp"
+#include "inc/param_3d.hpp"
 #include "inc/global.hpp"
 
-domain_param::domain_param(int rank, int size, double z_boundary, double z_focus, double x_min, double x_max, int nx,
-	double y_min, double y_max, int ny, int cpml, double t_max, double dx, double dy, double dt) {
-	this->set_values(rank, size, z_boundary, z_focus, x_min, x_max, nx, y_min, y_max, ny, cpml, t_max, dx, dy, dt);
-}
-
-void domain_param::set_values(int rank, int size, double z_boundary, double z_focus, double x_min, double x_max, int nx,
-	double y_min, double y_max, int ny, int cpml, double t_max, double dx, double dy, double dt) {
+void param_3d::set_domain(int rank, int size, double z_boundary, double z_focus, double x_min, double x_max, int nx, double y_min, double y_max, int ny, int cpml, double t_max, double dx, double dy, double dt) {
 	if(x_min > x_max || y_min > y_max || t_max < 0.0) {
 		std::cerr << "error: bad value" << std::endl;
+		return;
 	}
 	this->rank = rank;
 	this->size = size;
@@ -54,4 +49,22 @@ void domain_param::set_values(int rank, int size, double z_boundary, double z_fo
 	for(auto k = 0; k < this->nt; k++) {
 		this->t_coord[k] = this->t_lim[0] + (this->nt_start + k) * this->dt;
 	}
+}
+
+void param_3d::set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int direction, int id) {
+	if(t_start > t_end || fwhm_time < 0 || omega < 0 || amp < 0 || w_0 < 2.0 * constants::c / omega) {
+		std::cerr << "error: bad value" << std::endl;
+		return;
+	}
+	this->t_start = t_start;
+	this->t_end = t_end;
+	this->fwhm_time = fwhm_time;
+	this->t_0 = t_0;
+	this->x_0 = x_0;
+	this->y_0 = y_0;
+	this->omega = omega;
+	this->amp = amp;
+	this->w_0 = w_0;
+	this->direction = direction;
+	this->id = id;
 }

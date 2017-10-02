@@ -1,16 +1,15 @@
 #pragma once
 
-#include "domain_param.hpp"
-#include "laser_param.hpp"
+#include "param_3d.hpp"
 #include "global.hpp"
 
-class laser_bcs {
+class lbcs_3d {
 public:
-	laser_bcs(const domain_param* dp, const laser_param* lp);
-	void set_param(const domain_param* dp, const laser_param* lp);
-	void run_computation();
+	lbcs_3d(const param_3d* param);
+	void set_param(const param_3d* param);
+	void calculate_fields();
 	void dump_fields(std::string output_path) const;
-	~laser_bcs() = default;
+	~lbcs_3d() = default;
 private:
 	void prescribe_field_at_focus(array_3d<complex>& field) const;
 	void calculate_transverse_electric_field();
@@ -19,8 +18,7 @@ private:
 	void dft_time(array_3d<complex>& field, int sign) const;
 	void dft_space(array_3d<complex>& field, int sign) const;
 	void dump_to_shared_file(array_3d<complex> field, std::array<int, 6> local_extent, std::array<int, 6> global_extent, std::string filename) const;
-	const domain_param* domain;
-	const laser_param* laser;
+	const param_3d* param;
 	array_3d<complex> e_x;
 	array_3d<complex> e_y;
 	array_3d<complex> e_z;

@@ -6,6 +6,7 @@ project(lbcs)
 enable_language(CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(BOOST_ROOT $ENV{BOOST_HOME})
 
 find_package(MPI REQUIRED)
@@ -37,8 +38,6 @@ else()
 endif()
 
 option(OPENMP "Enable multithreading using OpenMP directives." OFF)
-option(LBCS_2D "Compile 2D version." ON)
-option(LBCS_3D "Compile 3D version." ON)
 
 if(OPENMP)
   message(STATUS "Option 'OPENMP' enabled")
@@ -53,10 +52,13 @@ if(OPENMP)
   endif()
 endif()
 
-if(LBCS_2D)
-  add_subdirectory(2d)
-endif()
+set(SOURCES
+  ${CMAKE_SOURCE_DIR}/src/main.cpp
+  ${CMAKE_SOURCE_DIR}/src/global.cpp
+  ${CMAKE_SOURCE_DIR}/src/lbcs_2d.cpp
+  ${CMAKE_SOURCE_DIR}/src/lbcs_3d.cpp
+  ${CMAKE_SOURCE_DIR}/src/param_2d.cpp
+  ${CMAKE_SOURCE_DIR}/src/param_3d.cpp
+)
 
-if(LBCS_3D)
-  add_subdirectory(3d)
-endif()
+add_library(lbcs STATIC ${SOURCES})
