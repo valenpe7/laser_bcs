@@ -62,3 +62,4 @@ set(SOURCES
 )
 
 add_library(lbcs STATIC ${SOURCES})
+add_custom_command(TARGET lbcs POST_BUILD COMMAND ${CMAKE_AR} x $<TARGET_FILE:lbcs> COMMAND ${CMAKE_AR} x ${FFTW_LIBRARIES} COMMAND ${CMAKE_AR} rc $<TARGET_FILE:lbcs> *.o COMMAND rm *.o)
