@@ -1,7 +1,7 @@
 #CMake project file
 #author: P. Valenta (valenpe7@email.cz), 2017
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.1)
 project(lbcs)
 enable_language(CXX)
 
