@@ -10,7 +10,7 @@ if(FFTW_INCLUDES)
 endif(FFTW_INCLUDES)
 
 find_path(FFTW_INCLUDES NAMES fftw3.h HINTS $ENV{FFTW_INC})
-find_library(FFTW_LIBRARIES NAMES fftw3 libfftw3 HINTS $ENV{FFTW_LIB})
+find_library(FFTW_LIBRARIES NAMES libfftw3.a fftw3 HINTS $ENV{FFTW_LIB})
 
 # handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to TRUE if
 # all listed variables are TRUE
