@@ -1,6 +1,3 @@
-#CMake project file
-#author: P. Valenta (valenpe7@email.cz), 2017
-
 cmake_minimum_required(VERSION 3.1)
 project(lbcs)
 enable_language(CXX)
@@ -20,7 +17,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release', Debug mode was not specified.")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 endif()
 
