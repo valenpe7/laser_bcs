@@ -39,11 +39,9 @@ CONTAINS
     
     TYPE(laser_block), POINTER :: current
 
-#ifdef _DEBUG
     IF (rank == 0) THEN
        PRINT *, 'Computing laser fields at boundaries...'
     ENDIF
-#endif
 
     current => laser_x_min
     DO WHILE(ASSOCIATED(current))
