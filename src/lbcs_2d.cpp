@@ -59,7 +59,7 @@ void lbcs_2d::set_param(const param_2d* param) {
 #endif
 	for(auto i = 0; i < this->param->nx; i++) {
 		for(auto j = 0; j < this->param->nt; j++) {
-			k_z[i][j] = std::real(sqrt(static_cast<std::complex<double>>(pow(this->omega[j] / constants::c, 2) - pow(k_x[i], 2))));
+			k_z[i][j] = std::real(sqrt(static_cast<complex>(pow(this->omega[j] / constants::c, 2) - pow(k_x[i], 2))));
 		}
 	}
 }

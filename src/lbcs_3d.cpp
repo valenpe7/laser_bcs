@@ -74,7 +74,7 @@ void lbcs_3d::set_param(const param_3d* param) {
 	for(auto i = 0; i < this->param->nx; i++) {
 		for(auto j = 0; j < this->param->ny; j++) {
 			for(auto k = 0; k < this->param->nt; k++) {
-				k_z[i][j][k] = std::real(sqrt(static_cast<std::complex<double>>(pow(this->omega[k] / constants::c, 2) - pow(k_x[i], 2) - pow(k_y[j], 2))));
+				k_z[i][j][k] = std::real(sqrt(static_cast<complex>(pow(this->omega[k] / constants::c, 2) - pow(k_x[i], 2) - pow(k_y[j], 2))));
 			}
 		}
 	}
