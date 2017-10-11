@@ -191,7 +191,7 @@ void lbcs_3d::calculate_magnetic_field() {
 }
 
 void lbcs_3d::normalize(array_3d<complex>& field) const {
-	tools::multiply_array(field, 1.0 / (this->param->nx * this->param->ny * this->param->nt_global));
+	tools::multiply_array(field, 2.0 / (this->param->nx * this->param->ny * this->param->nt_global));
 }
 
 void lbcs_3d::dump_field(array_3d<complex> field, std::string name, std::string output_path) const {
