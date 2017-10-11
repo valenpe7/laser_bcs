@@ -162,7 +162,7 @@ void lbcs_2d::calculate_magnetic_field() {
 }
 
 void lbcs_2d::normalize(array_2d<complex>& field) const {
-	tools::multiply_array(field, 1.0 / (this->param->nx * this->param->nt_global));
+	tools::multiply_array(field, 2.0 / (this->param->nx * this->param->nt_global));
 }
 
 void lbcs_2d::dump_field(array_2d<complex> field, std::string name, std::string output_path) const {
