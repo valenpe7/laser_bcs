@@ -7,8 +7,7 @@ class lbcs_3d {
 public:
 	lbcs_3d(const param_3d* param);
 	void set_param(const param_3d* param);
-	void calculate_fields();
-	void dump_fields(std::string output_path) const;
+	void calculate_fields(std::string output_path);
 	~lbcs_3d() = default;
 private:
 	void prescribe_field_at_focus(array_3d<complex>& field) const;
@@ -17,6 +16,8 @@ private:
 	void calculate_magnetic_field();
 	void dft_time(array_3d<complex>& field, int sign) const;
 	void dft_space(array_3d<complex>& field, int sign) const;
+	void normalize(array_3d<complex>& field) const;
+	void dump_field(array_3d<complex> field, std::string name, std::string output_path) const;
 	void dump_to_shared_file(array_3d<complex> field, std::array<int, 6> local_extent, std::array<int, 6> global_extent, std::string filename) const;
 	const param_3d* param;
 	array_3d<complex> e_x;

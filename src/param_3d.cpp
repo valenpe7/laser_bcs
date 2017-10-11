@@ -6,18 +6,18 @@
 #include "inc/global.hpp"
 
 void param_3d::set_domain(int rank, int size, double z_boundary, double z_focus, double x_min, double x_max, int nx, double y_min, double y_max, int ny, int cpml, double t_max, double dx, double dy, double dt) {
-	if(x_min > x_max || y_min > y_max || t_max < 0.0) {
+	if (x_min > x_max || y_min > y_max || t_max < 0.0) {
 		std::cerr << "error: bad value" << std::endl;
 		return;
 	}
 	this->rank = rank;
 	this->size = size;
-	this->x_lim = {x_min, x_max};
-	this->y_lim = {y_min, y_max};
+	this->x_lim = { x_min, x_max };
+	this->y_lim = { y_min, y_max };
 	this->z_boundary = z_boundary;
 	this->z_focus = z_focus;
 	this->time_shift = std::abs((this->z_boundary - this->z_focus) / constants::c);
-	this->t_lim = {0.0, t_max + time_shift};
+	this->t_lim = { 0.0, t_max + time_shift };
 	this->dx = dx;
 	this->dy = dy;
 	this->dt = dt;
@@ -28,8 +28,8 @@ void param_3d::set_domain(int rank, int size, double z_boundary, double z_focus,
 	this->nt_global = static_cast<int>(ceil((this->t_lim[1] - this->t_lim[0]) / this->dt));
 	this->nt = static_cast<int>(round(this->nt_global / this->size));
 	this->nt_start = this->rank * this->nt;
-	if(this->rank == this->size - 1) {
-		if((this->nt_global - this->size * this->nt) != 0) {
+	if (this->rank == this->size - 1) {
+		if ((this->nt_global - this->size * this->nt) != 0) {
 			this->nt += (this->nt_global - this->size * this->nt);
 		}
 	}
@@ -40,19 +40,19 @@ void param_3d::set_domain(int rank, int size, double z_boundary, double z_focus,
 	this->x_coord.resize(this->nx);
 	this->y_coord.resize(this->ny);
 	this->t_coord.resize(this->nt);
-	for(auto i = 0; i < this->nx; i++) {
+	for (auto i = 0; i < this->nx; i++) {
 		this->x_coord[i] = this->x_lim[0] + (i - this->cpml) * this->dx;
 	}
-	for(auto j = 0; j < this->ny; j++) {
+	for (auto j = 0; j < this->ny; j++) {
 		this->y_coord[j] = this->y_lim[0] + (j - this->cpml) * this->dy;
 	}
-	for(auto k = 0; k < this->nt; k++) {
+	for (auto k = 0; k < this->nt; k++) {
 		this->t_coord[k] = this->t_lim[0] + (this->nt_start + k) * this->dt;
 	}
 }
 
 void param_3d::set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int direction, int id) {
-	if(t_start > t_end || fwhm_time < 0 || omega < 0 || amp < 0 || w_0 < 2.0 * constants::c / omega) {
+	if (t_start > t_end || fwhm_time < 0 || omega < 0 || amp < 0 || w_0 < 2.0 * constants::c / omega) {
 		std::cerr << "error: bad value" << std::endl;
 		return;
 	}
