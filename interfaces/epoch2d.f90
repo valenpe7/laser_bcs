@@ -39,10 +39,6 @@ CONTAINS
     
     TYPE(laser_block), POINTER :: current
 
-    IF (rank == 0) THEN
-       PRINT *, 'Computing laser fields at boundaries...'
-    ENDIF
-
     current => laser_x_min
     DO WHILE(ASSOCIATED(current))
       CALL calculate_2d(rank, nproc, current%t_start, current%t_end, &
