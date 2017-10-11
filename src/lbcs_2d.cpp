@@ -167,7 +167,7 @@ void lbcs_2d::normalize(array_2d<complex>& field) const {
 
 void lbcs_2d::dump_field(array_2d<complex> field, std::string name, std::string output_path) const {
 	if (!this->fields_computed) {
-		if (this->param->rank == 0) std::cout << "Warning: cannot dump fiedls - fields are not computed" << std::endl;
+		if (this->param->rank == 0) std::cout << "Warning: cannot dump field " << name << " - fields are not computed" << std::endl;
 		return;
 	}
 	std::array<int, 4> local_extent = { 0, this->param->nx - 1, this->param->nt_start, this->param->nt_start + this->param->nt - 1 };
@@ -229,11 +229,11 @@ void lbcs_2d::calculate_fields(std::string output_path) {
 	this->normalize(this->b_x);
 	this->normalize(this->b_y);
 	this->normalize(this->b_z);
-	this->dump_field(this->e_x, "e_x", output_path);
+	this->fields_computed = true;
+  this->dump_field(this->e_x, "e_x", output_path);
 	this->dump_field(this->e_y, "e_y", output_path);
 	this->dump_field(this->e_z, "e_z", output_path);
 	this->dump_field(this->b_x, "b_x", output_path);
 	this->dump_field(this->b_y, "b_y", output_path);
 	this->dump_field(this->b_z, "b_z", output_path);
-	this->fields_computed = true;
 }
