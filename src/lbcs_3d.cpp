@@ -111,9 +111,9 @@ void lbcs_3d::dft_time(array_3d<complex>& field, int sign) const {
 	fft::create_plan_1d(this->param->nt_global, sign);
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
-			MPI_Gatherv(field[boost::indices[i][j][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, global_extent.data(), this->param->t_counts.data(), this->param->t_displs.data(), MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+			MPI_Gatherv(field[boost::indices[i][j][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 			if (this->param->rank == 0) global_extent = fft::execute_plan(global_extent);
-			MPI_Scatterv(global_extent.data(), this->param->t_counts.data(), this->param->t_displs.data(), MPI_DOUBLE_COMPLEX, field[boost::indices[i][j][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+			MPI_Scatterv(global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, field[boost::indices[i][j][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 		}
 	}
 	fft::destroy_plan();
@@ -223,7 +223,7 @@ void lbcs_3d::dump_to_shared_file(array_3d<complex> field, std::array<int, 6> lo
 	std::array<int, 3> start_coords = { local_extent[0], local_extent[2], local_extent[4] };
 	MPI_Type_create_subarray(3, size_global.data(), size_local.data(), start_coords.data(), MPI_ORDER_FORTRAN, MPI_DOUBLE, &local_array);
 	MPI_Type_commit(&local_array);
-	MPI_File_open(comm, filename.data(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
+	MPI_File_open(comm, const_cast<char*>(filename.data()), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
 	MPI_File_set_view(file, offset, MPI_DOUBLE, local_array, "native", MPI_INFO_NULL);
 	MPI_File_write_all(file, tools::get_real(field, size_local).data(), size_local[0] * size_local[1] * size_local[2], MPI_DOUBLE, &status);
 	MPI_File_close(&file);

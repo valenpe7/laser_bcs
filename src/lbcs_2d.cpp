@@ -91,9 +91,9 @@ void lbcs_2d::dft_time(array_2d<complex>& field, int sign) const {
 	std::vector<complex> global_extent(this->param->nt_global);
 	fft::create_plan_1d(this->param->nt_global, sign);
 	for (auto i = 0; i < this->param->nx; i++) {
-		MPI_Gatherv(field[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, global_extent.data(), this->param->t_counts.data(), this->param->t_displs.data(), MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+		MPI_Gatherv(field[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 		if (this->param->rank == 0) global_extent = fft::execute_plan(global_extent);
-		MPI_Scatterv(global_extent.data(), this->param->t_counts.data(), this->param->t_displs.data(), MPI_DOUBLE_COMPLEX, field[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+		MPI_Scatterv(global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, field[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 	}
 	fft::destroy_plan();
 }
@@ -194,7 +194,7 @@ void lbcs_2d::dump_to_shared_file(array_2d<complex> field, std::array<int, 4> lo
 	std::array<int, 2> start_coords = { local_extent[0], local_extent[2] };
 	MPI_Type_create_subarray(2, size_global.data(), size_local.data(), start_coords.data(), MPI_ORDER_FORTRAN, MPI_DOUBLE, &local_array);
 	MPI_Type_commit(&local_array);
-	MPI_File_open(comm, filename.data(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
+	MPI_File_open(comm, const_cast<char*>(filename.data()), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
 	MPI_File_set_view(file, offset, MPI_DOUBLE, local_array, "native", MPI_INFO_NULL);
 	MPI_File_write_all(file, tools::get_real(field, size_local).data(), size_local[0] * size_local[1], MPI_DOUBLE, &status);
 	MPI_File_close(&file);
