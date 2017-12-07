@@ -7,13 +7,9 @@
 
 #include "inc/lbcs_3d.hpp"
 
-lbcs_3d::lbcs_3d(const param_3d* param) {
-	this->set_param(param);
+lbcs_3d::lbcs_3d(param_3d param) {
 	this->fields_computed = false;
-}
-
-void lbcs_3d::set_param(const param_3d* param) {
-	this->param = param;
+  this->param = std::make_unique<param_3d>(param);
 	this->e_x.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);
 	this->e_y.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);
 	this->e_z.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);

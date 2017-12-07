@@ -36,7 +36,7 @@ void calculate_2d(int* rank, int* size, double* t_start, double* t_end, double* 
 		std::cout << "Calculating fields of laser " << *id << " at boundary..." << std::endl;
 	}
 #endif
-	lbcs_2d lbcs(&param);
+	lbcs_2d lbcs(param);
 	lbcs.calculate_fields(std::string(data_dir));
 #ifdef _DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -60,7 +60,7 @@ void calculate_3d(int* rank, int* size, double* t_start, double* t_end, double* 
 		std::cout << "Calculating fields of laser " << *id << " at boundary..." << std::endl;
 	}
 #endif
-	lbcs_3d lbcs(&param);
+	lbcs_3d lbcs(param);
 	lbcs.calculate_fields(std::string(data_dir));
 #ifdef _DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
