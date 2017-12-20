@@ -74,7 +74,7 @@ void lbcs_2d::prescribe_field_at_focus(array_2d<complex>& field) const {
 				field[i][j] = { this->param->amplitude * exp(
 					- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
 					- pow((this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0)))
-					/ this->param->fwhm_time, 2)) * cos(this->param->omega * this->param->t_coord[j]), 0.0 };
+					/ this->param->fwhm_time, 2)) * cos(this->param->omega * (this->param->t_coord[j] - this->param->t_0 - this->param->time_shift)), 0.0 };
 			}
 			else {
 				field[i][j] = { 0.0, 0.0 };
