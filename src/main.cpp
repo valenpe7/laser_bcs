@@ -10,10 +10,10 @@
 extern "C" {
 #endif
 	void calculate_2d(int* rank, int* size, double* t_start, double* t_end, double* fwhm_time, double* t_0, double* omega,
-		double* amplitude, double* x_0, double* w_0, int* direction, int* id, double* z_boundary, double* z_focus, double* x_min, double* x_max,
+		double* amplitude, double* x_0, double* w_0, int* direction, int* id, double* phase, double* z_boundary, double* z_focus, double* x_min, double* x_max,
 		int* nx, int* cpml, double* t_max, double* dx, double* dt, const char* data_dir);
 	void calculate_3d(int* rank, int* size, double* t_start, double* t_end, double* fwhm_time, double* t_0, double* omega,
-		double* amplitude, double* x_0, double* y_0, double* w_0, int * direction, int* id, double* z_boundary, double* z_focus, double* x_min, double* x_max,
+		double* amplitude, double* x_0, double* y_0, double* w_0, int * direction, int* id, double* phase, double* z_boundary, double* z_focus, double* x_min, double* x_max,
 		double* y_min, double* y_max, int* nx, int* ny, int* cpml, double* t_max, double* dx, double* dy, double* dt, const char* data_dir);
 	void retrieve_2d(double* buffer, int* id, const char* data_dir, const char* field, int* timestep,
 		int* size_global, int* first, int* last);
@@ -24,11 +24,11 @@ extern "C" {
 #endif
 
 void calculate_2d(int* rank, int* size, double* t_start, double* t_end, double* fwhm_time, double* t_0, double* omega,
-	double* amplitude, double* x_0, double* w_0, int* direction, int* id, double* z_boundary, double* z_focus, double* x_min, double* x_max,
+	double* amplitude, double* x_0, double* w_0, int* direction, int* id, double* phase, double* z_boundary, double* z_focus, double* x_min, double* x_max,
 	int* nx, int* cpml, double* t_max, double* dx, double* dt, const char* data_dir) {
 	param_2d param;
 	param.set_domain(*rank, *size, *z_boundary, *z_focus, *x_min, *x_max, *nx, *cpml, *t_max, *dx, *dt);
-	param.set_laser(*t_start, *t_end, *fwhm_time, *t_0, *x_0, *omega, *amplitude, *w_0, *direction, *id);
+	param.set_laser(*t_start, *t_end, *fwhm_time, *t_0, *x_0, *omega, *amplitude, *w_0, *direction, *id, *phase);
 #ifdef _DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
 	auto t1 = std::chrono::high_resolution_clock::now();
@@ -48,11 +48,11 @@ void calculate_2d(int* rank, int* size, double* t_start, double* t_end, double* 
 }
 
 void calculate_3d(int* rank, int* size, double* t_start, double* t_end, double* fwhm_time, double* t_0, double* omega,
-	double* amplitude, double* x_0, double* y_0, double* w_0, int * direction, int* id, double* z_boundary, double* z_focus, double* x_min, double* x_max,
+	double* amplitude, double* x_0, double* y_0, double* w_0, int * direction, int* id, double* phase, double* z_boundary, double* z_focus, double* x_min, double* x_max,
 	double* y_min, double* y_max, int* nx, int* ny, int* cpml, double* t_max, double* dx, double* dy, double* dt, const char* data_dir) {
 	param_3d param;
 	param.set_domain(*rank, *size, *z_boundary, *z_focus, *x_min, *x_max, *nx, *y_min, *y_max, *ny, *cpml, *t_max, *dx, *dy, *dt);
-	param.set_laser(*t_start, *t_end, *fwhm_time, *t_0, *x_0, *y_0, *omega, *amplitude, *w_0, *direction, *id);
+	param.set_laser(*t_start, *t_end, *fwhm_time, *t_0, *x_0, *y_0, *omega, *amplitude, *w_0, *direction, *id, *phase);
 #ifdef _DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
 	auto t1 = std::chrono::high_resolution_clock::now();

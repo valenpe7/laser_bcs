@@ -8,7 +8,7 @@ class param_2d {
 public:
 	param_2d() = default;
 	void set_domain(int rank, int size, double z_boundary, double z_focus, double x_min, double x_max, int nx, int cpml, double t_max, double dx, double dt);
-	void set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double omega, double amplitude, double w_0, int direction, int id);
+	void set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double omega, double amplitude, double w_0, int direction, int id, double phase);
 	~param_2d() = default;
 private:
 	int rank;
@@ -40,4 +40,5 @@ private:
 	double w_0;
 	int direction;
 	int id;
+  double phase;
 };

@@ -20,54 +20,34 @@ lbcs_3d::lbcs_3d(param_3d param) {
 	int half_nx = static_cast<int>(ceil(this->param->nx / 2.0));
 	int half_ny = static_cast<int>(ceil(this->param->ny / 2.0));
 	std::vector<int> tmp1(2 * half_nt), tmp2(2 * half_nx), tmp3(2 * half_ny);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
-	for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
-		if (this->param->direction == 1) {
-			tmp1[i] = (i < half_nt) ? i : 0;
-		}
-		else {
-			tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
+	if (this->param->direction == 1) {
+		for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
+      tmp1[i] = (i < half_nt) ? i : 0;
+    }
+	} else {
+	  for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
+      tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
 		}
 	}
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < static_cast<int>(tmp2.size()); i++) {
 		tmp2[i] = (i < half_nx) ? i : i - 2 * half_nx;
 	}
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < static_cast<int>(tmp3.size()); i++) {
 		tmp3[i] = (i < half_ny) ? i : i - 2 * half_ny;
 	}
 	this->omega.resize(this->param->nt);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nt; i++) {
 		this->omega[i] = 2.0 * constants::pi * static_cast<double>(tmp1[i + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
 	}
 	this->k_x.resize(this->param->nx);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto j = 0; j < this->param->nx; j++) {
 		this->k_x[j] = 2.0 * constants::pi * static_cast<double>(tmp2[j]) / (this->param->dx * this->param->nx);
 	}
 	this->k_y.resize(this->param->ny);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto j = 0; j < this->param->ny; j++) {
 		this->k_y[j] = 2.0 * constants::pi * static_cast<double>(tmp3[j]) / (this->param->dy * this->param->ny);
 	}
 	this->k_z.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
 			for (auto k = 0; k < this->param->nt; k++) {
@@ -81,9 +61,6 @@ void lbcs_3d::prescribe_field_at_focus(array_3d<complex>& field) const {
 	if (this->param->t_start < this->param->t_lim[0] || (this->param->t_start + this->param->time_shift) > this->param->t_lim[1]) {
 		if(this->param->rank == 0) std::cout << "Warning: pulse not captured at focus" << std::endl;
 	}
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
 			for (auto k = 0; k < this->param->nt; k++) {
@@ -92,7 +69,7 @@ void lbcs_3d::prescribe_field_at_focus(array_3d<complex>& field) const {
 						- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
 						- pow((this->param->y_coord[j] - this->param->y_0) / this->param->w_0, 2)
 						- pow((this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0)))
-						/ this->param->fwhm_time, 2)) * cos(this->param->omega * (this->param->t_coord[k] - this->param->t_0 - this->param->time_shift)), 0.0 };
+						/ this->param->fwhm_time, 2)) * cos(this->param->omega * (this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
 				}
 				else {
 					field[i][j][k] = { 0.0, 0.0 };
@@ -125,9 +102,6 @@ void lbcs_3d::dft_space(array_3d<complex>& field, int sign) const {
 }
 
 void lbcs_3d::calculate_transverse_electric_field() {
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
 			for (auto k = 0; k < this->param->nt; k++) {
@@ -145,9 +119,6 @@ void lbcs_3d::calculate_transverse_electric_field() {
 }
 
 void lbcs_3d::calculate_longitudinal_electric_field() {
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
 			for (auto k = 0; k < this->param->nt; k++) {
@@ -163,9 +134,6 @@ void lbcs_3d::calculate_longitudinal_electric_field() {
 }
 
 void lbcs_3d::calculate_magnetic_field() {
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
 			for (auto k = 0; k < this->param->nt; k++) {

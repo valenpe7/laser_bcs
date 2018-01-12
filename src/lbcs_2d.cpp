@@ -19,41 +19,27 @@ lbcs_2d::lbcs_2d(param_2d param) {
 	int half_nt = static_cast<int>(ceil(this->param->nt_global / 2.0));
 	int half_nx = static_cast<int>(ceil(this->param->nx / 2.0));
 	std::vector<int> tmp1(2 * half_nt), tmp2(2 * half_nx);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
-	for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
-		if (this->param->direction == 1) {
+	if (this->param->direction == 1) {
+    for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
 			tmp1[i] = (i < half_nt) ? i : 0;
 		}
-		else {
+  } else {
+    for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
 			tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
 		}
 	}
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < static_cast<int>(tmp2.size()); i++) {
 		tmp2[i] = (i < half_nx) ? i : i - 2 * half_nx;
 	}
 	this->omega.resize(this->param->nt);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nt; i++) {
 		this->omega[i] = 2.0 * constants::pi * static_cast<double>(tmp1[i + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
 	}
 	this->k_x.resize(this->param->nx);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		this->k_x[i] = 2.0 * constants::pi * static_cast<double>(tmp2[i]) / (this->param->dx * this->param->nx);
 	}
 	this->k_z.resize(boost::extents[this->param->nx][this->param->nt]);
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
 			k_z[i][j] = std::real(sqrt(static_cast<complex>(pow(this->omega[j] / constants::c, 2) - pow(k_x[i], 2))));
@@ -65,16 +51,13 @@ void lbcs_2d::prescribe_field_at_focus(array_2d<complex>& field) const {
 	if (this->param->t_start < this->param->t_lim[0] || (this->param->t_start + this->param->time_shift) > this->param->t_lim[1]) {
 		if (this->param->rank == 0) std::cout << "Warning: pulse not captured at focus" << std::endl;
 	}
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
 			if ((this->param->t_coord[j] - this->param->time_shift) >= this->param->t_start && (this->param->t_coord[j] - this->param->time_shift) <= this->param->t_end) {
 				field[i][j] = { this->param->amplitude * exp(
 					- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
-					- pow((this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0)))
-					/ this->param->fwhm_time, 2)) * cos(this->param->omega * (this->param->t_coord[j] - this->param->t_0 - this->param->time_shift)), 0.0 };
+					- pow((this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0))) / this->param->fwhm_time, 2)) 
+          * cos(this->param->omega * (this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
 			}
 			else {
 				field[i][j] = { 0.0, 0.0 };
@@ -104,9 +87,6 @@ void lbcs_2d::dft_space(array_2d<complex>& field, int sign) const {
 }
 
 void lbcs_2d::calculate_transverse_electric_field() {
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
 			if (this->k_z[i][j] > 0) {
@@ -122,9 +102,6 @@ void lbcs_2d::calculate_transverse_electric_field() {
 }
 
 void lbcs_2d::calculate_longitudinal_electric_field() {
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
 			if (this->k_z[i][j] > 0) {
@@ -138,9 +115,6 @@ void lbcs_2d::calculate_longitudinal_electric_field() {
 }
 
 void lbcs_2d::calculate_magnetic_field() {
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
 			if (this->k_z[i][j] > 0) {
