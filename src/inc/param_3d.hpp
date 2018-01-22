@@ -45,5 +45,5 @@ private:
 	double w_0;
 	int direction;
 	int id;
-  double phase;
+	double phase;
 };

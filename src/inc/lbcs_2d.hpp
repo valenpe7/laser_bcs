@@ -18,7 +18,7 @@ private:
 	void normalize(array_2d<complex>& field) const;
 	void dump_field(array_2d<complex> field, std::string name, std::string output_path) const;
 	void dump_to_shared_file(array_2d<complex> field, std::array<int, 4> local_extent, std::array<int, 4> global_extent, std::string filename) const;
-  std::unique_ptr<param_2d> param;
+	std::unique_ptr<param_2d> param;
 	array_2d<complex> e_x;
 	array_2d<complex> e_y;
 	array_2d<complex> e_z;
