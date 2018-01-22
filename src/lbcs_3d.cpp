@@ -9,7 +9,7 @@
 
 lbcs_3d::lbcs_3d(param_3d param) {
 	this->fields_computed = false;
-  this->param = std::make_unique<param_3d>(param);
+	this->param = std::make_unique<param_3d>(param);
 	this->e_x.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);
 	this->e_y.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);
 	this->e_z.resize(boost::extents[this->param->nx][this->param->ny][this->param->nt]);
@@ -22,11 +22,12 @@ lbcs_3d::lbcs_3d(param_3d param) {
 	std::vector<int> tmp1(2 * half_nt), tmp2(2 * half_nx), tmp3(2 * half_ny);
 	if (this->param->direction == 1) {
 		for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
-      tmp1[i] = (i < half_nt) ? i : 0;
-    }
-	} else {
-	  for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
-      tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
+			tmp1[i] = (i < half_nt) ? i : 0;
+		}
+	}
+	else {
+		for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
+			tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
 		}
 	}
 	for (auto i = 0; i < static_cast<int>(tmp2.size()); i++) {
@@ -59,17 +60,17 @@ lbcs_3d::lbcs_3d(param_3d param) {
 
 void lbcs_3d::prescribe_field_at_focus(array_3d<complex>& field) const {
 	if (this->param->t_start < this->param->t_lim[0] || (this->param->t_start + this->param->time_shift) > this->param->t_lim[1]) {
-		if(this->param->rank == 0) std::cout << "Warning: pulse not captured at focus" << std::endl;
+		if (this->param->rank == 0) std::cout << "Warning: pulse not captured at focus" << std::endl;
 	}
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->ny; j++) {
 			for (auto k = 0; k < this->param->nt; k++) {
 				if ((this->param->t_coord[k] - this->param->time_shift) >= this->param->t_start && (this->param->t_coord[k] - this->param->time_shift) <= this->param->t_end) {
 					field[i][j][k] = { this->param->amp * exp(
-						- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
+						-pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
 						- pow((this->param->y_coord[j] - this->param->y_0) / this->param->w_0, 2)
 						- pow((this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0)))
-						/ this->param->fwhm_time, 2)) * cos(this->param->omega * (this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
+							/ this->param->fwhm_time, 2)) * cos(this->param->omega * (this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
 				}
 				else {
 					field[i][j][k] = { 0.0, 0.0 };
@@ -223,7 +224,7 @@ void lbcs_3d::calculate_fields(std::string output_path) {
 	this->normalize(this->b_y);
 	this->normalize(this->b_z);
 	this->fields_computed = true;
-  this->dump_field(this->e_x, "e_x", output_path);
+	this->dump_field(this->e_x, "e_x", output_path);
 	this->dump_field(this->e_y, "e_y", output_path);
 	this->dump_field(this->e_z, "e_z", output_path);
 	this->dump_field(this->b_x, "b_x", output_path);

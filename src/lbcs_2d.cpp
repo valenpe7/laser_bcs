@@ -8,7 +8,7 @@
 #include "inc/lbcs_2d.hpp"
 
 lbcs_2d::lbcs_2d(param_2d param) {
-  this->fields_computed = false;
+	this->fields_computed = false;
 	this->param = std::make_unique<param_2d>(param);
 	this->e_x.resize(boost::extents[this->param->nx][this->param->nt]);
 	this->e_y.resize(boost::extents[this->param->nx][this->param->nt]);
@@ -20,11 +20,12 @@ lbcs_2d::lbcs_2d(param_2d param) {
 	int half_nx = static_cast<int>(ceil(this->param->nx / 2.0));
 	std::vector<int> tmp1(2 * half_nt), tmp2(2 * half_nx);
 	if (this->param->direction == 1) {
-    for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
+		for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
 			tmp1[i] = (i < half_nt) ? i : 0;
 		}
-  } else {
-    for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
+	}
+	else {
+		for (auto i = 0; i < static_cast<int>(tmp1.size()); i++) {
 			tmp1[i] = (i < half_nt) ? 0 : i - 2 * half_nt;
 		}
 	}
@@ -55,9 +56,9 @@ void lbcs_2d::prescribe_field_at_focus(array_2d<complex>& field) const {
 		for (auto j = 0; j < this->param->nt; j++) {
 			if ((this->param->t_coord[j] - this->param->time_shift) >= this->param->t_start && (this->param->t_coord[j] - this->param->time_shift) <= this->param->t_end) {
 				field[i][j] = { this->param->amplitude * exp(
-					- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
-					- pow((this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0))) / this->param->fwhm_time, 2)) 
-          * cos(this->param->omega * (this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
+					-pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
+					- pow((this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0))) / this->param->fwhm_time, 2))
+					* cos(this->param->omega * (this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
 			}
 			else {
 				field[i][j] = { 0.0, 0.0 };
@@ -200,7 +201,7 @@ void lbcs_2d::calculate_fields(std::string output_path) {
 	this->normalize(this->b_y);
 	this->normalize(this->b_z);
 	this->fields_computed = true;
-  this->dump_field(this->e_x, "e_x", output_path);
+	this->dump_field(this->e_x, "e_x", output_path);
 	this->dump_field(this->e_y, "e_y", output_path);
 	this->dump_field(this->e_z, "e_z", output_path);
 	this->dump_field(this->b_x, "b_x", output_path);

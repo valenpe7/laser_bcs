@@ -59,6 +59,6 @@ void param_2d::set_laser(double t_start, double t_end, double fwhm_time, double 
 	this->w_0 = w_0;
 	this->direction = direction;
 	this->id = id;
-  this->phase = phase;
+	this->phase = phase;
 }
 

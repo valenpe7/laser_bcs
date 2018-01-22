@@ -41,7 +41,7 @@ void calculate_2d(int* rank, int* size, double* t_start, double* t_end, double* 
 #ifdef _DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
 	auto t2 = std::chrono::high_resolution_clock::now();
-	if(*rank == 0) {
+	if (*rank == 0) {
 		std::cout << "Fields of laser " << *id << " dumped in: " << data_dir << " (runtime: " << std::chrono::duration_cast<std::chrono::duration<float>>(t2 - t1).count() << " s)" << std::endl;
 	}
 #endif

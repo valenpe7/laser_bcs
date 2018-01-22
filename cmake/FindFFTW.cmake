@@ -9,8 +9,15 @@ if(FFTW_INCLUDES)
   set(FFTW_FIND_QUIETLY TRUE)
 endif(FFTW_INCLUDES)
 
-find_path(FFTW_INCLUDES NAMES fftw3.h HINTS $ENV{FFTW_INC})
-find_library(FFTW_LIBRARIES NAMES libfftw3.a fftw3 HINTS $ENV{FFTW_LIB})
+if(UNIX)
+	find_path(FFTW_INCLUDES NAMES fftw3.h HINTS $ENV{FFTW_INC})
+	find_library(FFTW_LIBRARIES NAMES libfftw3.a HINTS $ENV{FFTW_LIB})
+endif()
+
+if(WIN32)
+	find_path(FFTW_INCLUDES NAMES fftw3.h HINTS $ENV{FFTW_INC})
+	find_library(FFTW_LIBRARIES NAMES libfftw3-3.lib HINTS $ENV{FFTW_LIB})
+endif()
 
 # handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to TRUE if
 # all listed variables are TRUE
