@@ -32,33 +32,26 @@ void fft::destroy_plan() {
 	fftw_destroy_plan(plan);
 }
 
-void tools::multiply_array(array_2d<complex>& field, const double scalar) {
-	for (size_t i = 0; i < field.num_elements(); i++) {
-		field.data()[i] *= scalar;
-	}
-}
-
-void tools::multiply_array(array_3d<complex>& field, const double scalar) {
+template <typename T, int N>
+void tools::multiply_array(m_array<T, N>& field, const double scalar) {
 	for (size_t i = 0; i < field.num_elements(); i++) {
 		field.data()[i] *= scalar;
 	}
 }
 
 std::vector<complex> tools::array_to_vec(view_1d view) {
-	size_t counter = 0;
 	std::vector<complex> vec(view.shape()[0]);
 	for (size_t i = 0; i < view.shape()[0]; i++) {
-		vec[counter++] = view[i];
+		vec.push_back(view[i]);
 	}
 	return vec;
 }
 
 std::vector<complex> tools::array_to_vec(view_2d view) {
-	size_t counter = 0;
 	std::vector<complex> vec(view.shape()[0] * view.shape()[1]);
 	for (size_t i = 0; i < view.shape()[0]; i++) {
 		for (size_t j = 0; j < view.shape()[1]; j++) {
-			vec[counter++] = view[i][j];
+			vec.push_back(view[i][j]);
 		}
 	}
 	return vec;
@@ -80,24 +73,22 @@ void tools::vec_to_array(view_2d& view, std::vector<complex> vec) {
 	}
 }
 
-std::vector<double> tools::get_real(array_2d<complex> field, std::array<int, 2> size) {
+std::vector<double> tools::get_real(m_array<complex, 2> field, std::array<int, 2> size) {
 	std::vector<double> real_part(size[0] * size[1]);
-	size_t counter = 0;
 	for (auto j = 0; j < size[1]; j++) {
 		for (auto i = 0; i < size[0]; i++) {
-			real_part[counter++] = std::real(field[i][j]);
+			real_part.push_back(std::real(field[i][j]));
 		}
 	}
 	return real_part;
 }
 
-std::vector<double> tools::get_real(array_3d<complex> field, std::array<int, 3> size) {
+std::vector<double> tools::get_real(m_array<complex, 3> field, std::array<int, 3> size) {
 	std::vector<double> real_part(size[0] * size[1] * size[2]);
-	size_t counter = 0;
 	for (auto k = 0; k < size[2]; k++) {
 		for (auto j = 0; j < size[1]; j++) {
 			for (auto i = 0; i < size[0]; i++) {
-				real_part[counter++] = std::real(field[i][j][k]);
+				real_part.push_back(std::real(field[i][j][k]));
 			}
 		}
 	}

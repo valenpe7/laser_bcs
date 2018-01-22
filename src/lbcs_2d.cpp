@@ -48,7 +48,7 @@ lbcs_2d::lbcs_2d(param_2d param) {
 	}
 }
 
-void lbcs_2d::prescribe_field_at_focus(array_2d<complex>& field) const {
+void lbcs_2d::prescribe_field_at_focus(m_array<complex, 2>& field) const {
 	if (this->param->t_start < this->param->t_lim[0] || (this->param->t_start + this->param->time_shift) > this->param->t_lim[1]) {
 		if (this->param->rank == 0) std::cout << "Warning: pulse not captured at focus" << std::endl;
 	}
@@ -67,7 +67,7 @@ void lbcs_2d::prescribe_field_at_focus(array_2d<complex>& field) const {
 	}
 }
 
-void lbcs_2d::dft_time(array_2d<complex>& field, int sign) const {
+void lbcs_2d::dft_time(m_array<complex, 2>& field, int sign) const {
 	std::vector<complex> global_extent(this->param->nt_global);
 	fft::create_plan_1d(this->param->nt_global, sign);
 	for (auto i = 0; i < this->param->nx; i++) {
@@ -78,10 +78,10 @@ void lbcs_2d::dft_time(array_2d<complex>& field, int sign) const {
 	fft::destroy_plan();
 }
 
-void lbcs_2d::dft_space(array_2d<complex>& field, int sign) const {
+void lbcs_2d::dft_space(m_array<complex, 2>& field, int sign) const {
 	fft::create_plan_1d(this->param->nx, sign);
 	for (auto i = 0; i < this->param->nt; i++) {
-		view_1d row = field[boost::indices[range()][i]];
+		auto row = field[boost::indices[range()][i]];
 		tools::vec_to_array(row, fft::execute_plan(tools::array_to_vec(row)));
 	}
 	fft::destroy_plan();
@@ -132,11 +132,11 @@ void lbcs_2d::calculate_magnetic_field() {
 	}
 }
 
-void lbcs_2d::normalize(array_2d<complex>& field) const {
-	tools::multiply_array(field, 2.0 / (this->param->nx * this->param->nt_global));
+void lbcs_2d::normalize(m_array<complex, 2>& field) const {
+	tools::multiply_array<complex, 2>(field, 2.0 / (this->param->nx * this->param->nt_global));
 }
 
-void lbcs_2d::dump_field(array_2d<complex> field, std::string name, std::string output_path) const {
+void lbcs_2d::dump_field(m_array<complex, 2> field, std::string name, std::string output_path) const {
 	if (!this->fields_computed) {
 		if (this->param->rank == 0) std::cout << "Warning: cannot dump field " << name << " - fields are not computed" << std::endl;
 		return;
@@ -146,7 +146,7 @@ void lbcs_2d::dump_field(array_2d<complex> field, std::string name, std::string 
 	this->dump_to_shared_file(field, local_extent, global_extent, output_path + "/" + name + "_" + std::to_string(this->param->id) + ".raw");
 }
 
-void lbcs_2d::dump_to_shared_file(array_2d<complex> field, std::array<int, 4> local_extent, std::array<int, 4> global_extent, std::string filename) const {
+void lbcs_2d::dump_to_shared_file(m_array<complex, 2> field, std::array<int, 4> local_extent, std::array<int, 4> global_extent, std::string filename) const {
 	MPI_File file;
 	MPI_Offset offset = 0;
 	MPI_Status status;
