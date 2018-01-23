@@ -34,8 +34,8 @@ void fft::destroy_plan() {
 
 template <typename T, int N>
 void tools::multiply_array(m_array<T, N>& field, const double scalar) {
-	for (size_t i = 0; i < field.num_elements(); i++) {
-		field.data()[i] *= scalar;
+	for (size_t i = 0; i < field.data.num_elements(); i++) {
+		field.data.data()[i] *= scalar;
 	}
 }
 
@@ -77,7 +77,7 @@ std::vector<double> tools::get_real(m_array<complex, 2> field, std::array<int, 2
 	std::vector<double> real_part(size[0] * size[1]);
 	for (auto j = 0; j < size[1]; j++) {
 		for (auto i = 0; i < size[0]; i++) {
-			real_part.push_back(std::real(field[i][j]));
+			real_part.push_back(std::real(field.data[i][j]));
 		}
 	}
 	return real_part;
@@ -88,7 +88,7 @@ std::vector<double> tools::get_real(m_array<complex, 3> field, std::array<int, 3
 	for (auto k = 0; k < size[2]; k++) {
 		for (auto j = 0; j < size[1]; j++) {
 			for (auto i = 0; i < size[0]; i++) {
-				real_part.push_back(std::real(field[i][j][k]));
+				real_part.push_back(std::real(field.data[i][j][k]));
 			}
 		}
 	}

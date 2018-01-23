@@ -8,10 +8,14 @@
 #include <boost/multi_array.hpp>
 
 using complex = std::complex<double>;
-template <typename T, int N> using m_array = boost::multi_array<T, N>;
-using view_1d = m_array<complex, 2>::array_view<1>::type;
-using view_2d = m_array<complex, 3>::array_view<2>::type;
+using view_1d = boost::multi_array<complex, 2>::array_view<1>::type;
+using view_2d = boost::multi_array<complex, 3>::array_view<2>::type;
 using range = boost::multi_array_types::index_range;
+template <typename T, int N> struct m_array {
+	boost::multi_array<T, N> data;
+	std::string name;
+	bool calculated;
+};
 
 namespace constants {
 	extern const double pi;

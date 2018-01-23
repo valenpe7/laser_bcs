@@ -8,14 +8,28 @@
 #include "inc/lbcs_2d.hpp"
 
 lbcs_2d::lbcs_2d(param_2d param) {
-	this->fields_computed = false;
 	this->param = std::make_unique<param_2d>(param);
-	this->e_x.resize(boost::extents[this->param->nx][this->param->nt]);
-	this->e_y.resize(boost::extents[this->param->nx][this->param->nt]);
-	this->e_z.resize(boost::extents[this->param->nx][this->param->nt]);
-	this->b_x.resize(boost::extents[this->param->nx][this->param->nt]);
-	this->b_y.resize(boost::extents[this->param->nx][this->param->nt]);
-	this->b_z.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->e_x.data.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->e_x.name = "e_x";
+	this->e_x.calculated = false;
+	this->e_y.data.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->e_y.name = "e_y";
+	this->e_y.calculated = false;
+	this->e_z.data.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->e_z.name = "e_z";
+	this->e_z.calculated = false;
+	this->b_x.data.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->b_x.name = "b_x";
+	this->b_x.calculated = false;
+	this->b_y.data.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->b_y.name = "b_y";
+	this->b_y.calculated = false;
+	this->b_z.data.resize(boost::extents[this->param->nx][this->param->nt]);
+	this->b_z.name = "b_z";
+	this->b_z.calculated = false;
+	this->omega.resize(this->param->nt);
+	this->k_x.resize(this->param->nx);
+	this->k_z.data.resize(boost::extents[this->param->nx][this->param->nt]);
 	int half_nt = static_cast<int>(ceil(this->param->nt_global / 2.0));
 	int half_nx = static_cast<int>(ceil(this->param->nx / 2.0));
 	std::vector<int> tmp1(2 * half_nt), tmp2(2 * half_nx);
@@ -32,18 +46,15 @@ lbcs_2d::lbcs_2d(param_2d param) {
 	for (auto i = 0; i < static_cast<int>(tmp2.size()); i++) {
 		tmp2[i] = (i < half_nx) ? i : i - 2 * half_nx;
 	}
-	this->omega.resize(this->param->nt);
 	for (auto i = 0; i < this->param->nt; i++) {
 		this->omega[i] = 2.0 * constants::pi * static_cast<double>(tmp1[i + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
 	}
-	this->k_x.resize(this->param->nx);
 	for (auto i = 0; i < this->param->nx; i++) {
 		this->k_x[i] = 2.0 * constants::pi * static_cast<double>(tmp2[i]) / (this->param->dx * this->param->nx);
 	}
-	this->k_z.resize(boost::extents[this->param->nx][this->param->nt]);
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
-			k_z[i][j] = std::real(sqrt(static_cast<complex>(pow(this->omega[j] / constants::c, 2) - pow(k_x[i], 2))));
+			k_z.data[i][j] = std::real(sqrt(static_cast<complex>(pow(this->omega[j] / constants::c, 2) - pow(k_x[i], 2))));
 		}
 	}
 }
@@ -55,13 +66,13 @@ void lbcs_2d::prescribe_field_at_focus(m_array<complex, 2>& field) const {
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
 			if ((this->param->t_coord[j] - this->param->time_shift) >= this->param->t_start && (this->param->t_coord[j] - this->param->time_shift) <= this->param->t_end) {
-				field[i][j] = { this->param->amplitude * exp(
-					-pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
+				field.data[i][j] = { this->param->amplitude * exp(
+					- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
 					- pow((this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0))) / this->param->fwhm_time, 2))
 					* cos(this->param->omega * (this->param->t_coord[j] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
 			}
 			else {
-				field[i][j] = { 0.0, 0.0 };
+				field.data[i][j] = { 0.0, 0.0 };
 			}
 		}
 	}
@@ -71,9 +82,9 @@ void lbcs_2d::dft_time(m_array<complex, 2>& field, int sign) const {
 	std::vector<complex> global_extent(this->param->nt_global);
 	fft::create_plan_1d(this->param->nt_global, sign);
 	for (auto i = 0; i < this->param->nx; i++) {
-		MPI_Gatherv(field[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+		MPI_Gatherv(field.data[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 		if (this->param->rank == 0) global_extent = fft::execute_plan(global_extent);
-		MPI_Scatterv(global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, field[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+		MPI_Scatterv(global_extent.data(), const_cast<int*>(this->param->t_counts.data()), const_cast<int*>(this->param->t_displs.data()), MPI_DOUBLE_COMPLEX, field.data[boost::indices[i][range()]].origin(), this->param->nt, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 	}
 	fft::destroy_plan();
 }
@@ -81,7 +92,7 @@ void lbcs_2d::dft_time(m_array<complex, 2>& field, int sign) const {
 void lbcs_2d::dft_space(m_array<complex, 2>& field, int sign) const {
 	fft::create_plan_1d(this->param->nx, sign);
 	for (auto i = 0; i < this->param->nt; i++) {
-		auto row = field[boost::indices[range()][i]];
+		auto row = field.data[boost::indices[range()][i]];
 		tools::vec_to_array(row, fft::execute_plan(tools::array_to_vec(row)));
 	}
 	fft::destroy_plan();
@@ -90,13 +101,13 @@ void lbcs_2d::dft_space(m_array<complex, 2>& field, int sign) const {
 void lbcs_2d::calculate_transverse_electric_field() {
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
-			if (this->k_z[i][j] > 0) {
-				this->e_x[i][j] *= exp(constants::imag_unit * this->k_z[i][j] * (this->param->z_boundary - this->param->z_focus));
-				this->e_y[i][j] *= exp(constants::imag_unit * this->k_z[i][j] * (this->param->z_boundary - this->param->z_focus));
+			if (this->k_z.data[i][j] > 0) {
+				this->e_x.data[i][j] *= exp(constants::imag_unit * this->k_z.data[i][j] * (this->param->z_boundary - this->param->z_focus));
+				this->e_y.data[i][j] *= exp(constants::imag_unit * this->k_z.data[i][j] * (this->param->z_boundary - this->param->z_focus));
 			}
 			else {
-				this->e_x[i][j] = { 0.0, 0.0 };
-				this->e_y[i][j] = { 0.0, 0.0 };
+				this->e_x.data[i][j] = { 0.0, 0.0 };
+				this->e_y.data[i][j] = { 0.0, 0.0 };
 			}
 		}
 	}
@@ -105,11 +116,11 @@ void lbcs_2d::calculate_transverse_electric_field() {
 void lbcs_2d::calculate_longitudinal_electric_field() {
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
-			if (this->k_z[i][j] > 0) {
-				this->e_z[i][j] = -(this->k_x[i] * this->e_x[i][j]) / this->k_z[i][j];
+			if (this->k_z.data[i][j] > 0) {
+				this->e_z.data[i][j] = -(this->k_x[i] * this->e_x.data[i][j]) / this->k_z.data[i][j];
 			}
 			else {
-				this->e_z[i][j] = { 0.0, 0.0 };
+				this->e_z.data[i][j] = { 0.0, 0.0 };
 			}
 		}
 	}
@@ -118,15 +129,15 @@ void lbcs_2d::calculate_longitudinal_electric_field() {
 void lbcs_2d::calculate_magnetic_field() {
 	for (auto i = 0; i < this->param->nx; i++) {
 		for (auto j = 0; j < this->param->nt; j++) {
-			if (this->k_z[i][j] > 0) {
-				this->b_x[i][j] = (pow(this->k_x[i], 2) - pow(this->omega[j] / constants::c, 2) * this->e_y[i][j]) / (this->omega[j] * this->k_z[i][j]);
-				this->b_y[i][j] = pow(this->omega[j] / constants::c, 2) * this->e_x[i][j] / (this->omega[j] * this->k_z[i][j]);
-				this->b_z[i][j] = this->k_x[i] * this->e_y[i][j] / this->omega[j];
+			if (this->k_z.data[i][j] > 0) {
+				this->b_x.data[i][j] = (pow(this->k_x[i], 2) - pow(this->omega[j] / constants::c, 2) * this->e_y.data[i][j]) / (this->omega[j] * this->k_z.data[i][j]);
+				this->b_y.data[i][j] = pow(this->omega[j] / constants::c, 2) * this->e_x.data[i][j] / (this->omega[j] * this->k_z.data[i][j]);
+				this->b_z.data[i][j] = this->k_x[i] * this->e_y.data[i][j] / this->omega[j];
 			}
 			else {
-				this->b_x[i][j] = { 0.0, 0.0 };
-				this->b_y[i][j] = { 0.0, 0.0 };
-				this->b_z[i][j] = { 0.0, 0.0 };
+				this->b_x.data[i][j] = { 0.0, 0.0 };
+				this->b_y.data[i][j] = { 0.0, 0.0 };
+				this->b_z.data[i][j] = { 0.0, 0.0 };
 			}
 		}
 	}
@@ -136,14 +147,14 @@ void lbcs_2d::normalize(m_array<complex, 2>& field) const {
 	tools::multiply_array<complex, 2>(field, 2.0 / (this->param->nx * this->param->nt_global));
 }
 
-void lbcs_2d::dump_field(m_array<complex, 2> field, std::string name, std::string output_path) const {
-	if (!this->fields_computed) {
-		if (this->param->rank == 0) std::cout << "Warning: cannot dump field " << name << " - fields are not computed" << std::endl;
+void lbcs_2d::dump_field(m_array<complex, 2> field, std::string output_path) const {
+	if (!field.calculated) {
+		if (this->param->rank == 0) std::cout << "Warning: cannot dump field " << field.name << " - field is not computed" << std::endl;
 		return;
 	}
 	std::array<int, 4> local_extent = { 0, this->param->nx - 1, this->param->nt_start, this->param->nt_start + this->param->nt - 1 };
 	std::array<int, 4> global_extent = { 0, this->param->nx - 1, 0, this->param->nt_global - this->param->ghost_cells - 1 };
-	this->dump_to_shared_file(field, local_extent, global_extent, output_path + "/" + name + "_" + std::to_string(this->param->id) + ".raw");
+	this->dump_to_shared_file(field, local_extent, global_extent, output_path + "/" + field.name + "_" + std::to_string(this->param->id) + ".raw");
 }
 
 void lbcs_2d::dump_to_shared_file(m_array<complex, 2> field, std::array<int, 4> local_extent, std::array<int, 4> global_extent, std::string filename) const {
@@ -200,11 +211,16 @@ void lbcs_2d::calculate_fields(std::string output_path) {
 	this->normalize(this->b_x);
 	this->normalize(this->b_y);
 	this->normalize(this->b_z);
-	this->fields_computed = true;
-	this->dump_field(this->e_x, "e_x", output_path);
-	this->dump_field(this->e_y, "e_y", output_path);
-	this->dump_field(this->e_z, "e_z", output_path);
-	this->dump_field(this->b_x, "b_x", output_path);
-	this->dump_field(this->b_y, "b_y", output_path);
-	this->dump_field(this->b_z, "b_z", output_path);
+	this->e_x.calculated = true;
+	this->e_y.calculated = true;
+	this->e_z.calculated = true;
+	this->b_x.calculated = true;
+	this->b_y.calculated = true;
+	this->b_z.calculated = true;
+	this->dump_field(this->e_x, output_path);
+	this->dump_field(this->e_y, output_path);
+	this->dump_field(this->e_z, output_path);
+	this->dump_field(this->b_x, output_path);
+	this->dump_field(this->b_y, output_path);
+	this->dump_field(this->b_z, output_path);
 }

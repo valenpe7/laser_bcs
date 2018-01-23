@@ -16,7 +16,7 @@ private:
 	void dft_time(m_array<complex, 3>& field, int sign) const;
 	void dft_space(m_array<complex, 3>& field, int sign) const;
 	void normalize(m_array<complex, 3>& field) const;
-	void dump_field(m_array<complex, 3> field, std::string name, std::string output_path) const;
+	void dump_field(m_array<complex, 3> field, std::string output_path) const;
 	void dump_to_shared_file(m_array<complex, 3> field, std::array<int, 6> local_extent, std::array<int, 6> global_extent, std::string filename) const;
 	std::unique_ptr<param_3d> param;
 	m_array<complex, 3> e_x;
@@ -29,5 +29,4 @@ private:
 	std::vector<double> k_x;
 	std::vector<double> k_y;
 	std::vector<double> omega;
-	bool fields_computed;
 };
