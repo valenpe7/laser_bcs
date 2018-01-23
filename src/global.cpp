@@ -1,7 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-
 #include "inc/global.hpp"
 
 const double constants::pi = 3.14159265e+00;

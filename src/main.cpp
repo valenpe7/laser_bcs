@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <mpi.h>
+#ifdef _DEBUG
+	#include <mpi.h>
+#endif
 
 #include "inc/lbcs_2d.hpp"
 #include "inc/lbcs_3d.hpp"
