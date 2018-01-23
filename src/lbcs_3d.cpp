@@ -51,8 +51,8 @@ lbcs_3d::lbcs_3d(param_3d param) {
 	for (auto i = 0; i < static_cast<int>(tmp3.size()); i++) {
 		tmp3[i] = (i < half_ny) ? i : i - 2 * half_ny;
 	}
-	for (auto i = 0; i < this->param->nt; i++) {
-		this->omega[i] = 2.0 * constants::pi * static_cast<double>(tmp1[i + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
+	for (auto k = 0; k < this->param->nt; k++) {
+		this->omega[k] = 2.0 * constants::pi * static_cast<double>(tmp1[k + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
 	}
 	for (auto j = 0; j < this->param->nx; j++) {
 		this->k_x[j] = 2.0 * constants::pi * static_cast<double>(tmp2[j]) / (this->param->dx * this->param->nx);

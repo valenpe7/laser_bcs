@@ -46,15 +46,15 @@ lbcs_2d::lbcs_2d(param_2d param) {
 	for (auto i = 0; i < static_cast<int>(tmp2.size()); i++) {
 		tmp2[i] = (i < half_nx) ? i : i - 2 * half_nx;
 	}
-	for (auto i = 0; i < this->param->nt; i++) {
-		this->omega[i] = 2.0 * constants::pi * static_cast<double>(tmp1[i + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
+	for (auto k = 0; k < this->param->nt; k++) {
+		this->omega[k] = 2.0 * constants::pi * static_cast<double>(tmp1[k + this->param->nt_start]) / (this->param->dt * this->param->nt_global);
 	}
 	for (auto i = 0; i < this->param->nx; i++) {
 		this->k_x[i] = 2.0 * constants::pi * static_cast<double>(tmp2[i]) / (this->param->dx * this->param->nx);
 	}
 	for (auto i = 0; i < this->param->nx; i++) {
-		for (auto j = 0; j < this->param->nt; j++) {
-			k_z.data[i][j] = std::real(sqrt(static_cast<complex>(pow(this->omega[j] / constants::c, 2) - pow(k_x[i], 2))));
+		for (auto k = 0; k < this->param->nt; k++) {
+			k_z.data[i][k] = std::real(sqrt(static_cast<complex>(pow(this->omega[k] / constants::c, 2) - pow(k_x[i], 2))));
 		}
 	}
 }
@@ -91,23 +91,23 @@ void lbcs_2d::dft_time(m_array<complex, 2>& field, int sign) const {
 
 void lbcs_2d::dft_space(m_array<complex, 2>& field, int sign) const {
 	fft::create_plan_1d(this->param->nx, sign);
-	for (auto i = 0; i < this->param->nt; i++) {
-		auto row = field.data[boost::indices[range()][i]];
-		tools::vec_to_array(row, fft::execute_plan(tools::array_to_vec(row)));
+	for (auto k = 0; k < this->param->nt; k++) {
+		auto slice = field.data[boost::indices[range()][k]];
+		tools::vec_to_array(slice, fft::execute_plan(tools::array_to_vec(slice)));
 	}
 	fft::destroy_plan();
 }
 
 void lbcs_2d::calculate_transverse_electric_field() {
 	for (auto i = 0; i < this->param->nx; i++) {
-		for (auto j = 0; j < this->param->nt; j++) {
-			if (this->k_z.data[i][j] > 0) {
-				this->e_x.data[i][j] *= exp(constants::imag_unit * this->k_z.data[i][j] * (this->param->z_boundary - this->param->z_focus));
-				this->e_y.data[i][j] *= exp(constants::imag_unit * this->k_z.data[i][j] * (this->param->z_boundary - this->param->z_focus));
+		for (auto k = 0; k < this->param->nt; k++) {
+			if (this->k_z.data[i][k] > 0) {
+				this->e_x.data[i][k] *= exp(constants::imag_unit * this->k_z.data[i][k] * (this->param->z_boundary - this->param->z_focus));
+				this->e_y.data[i][k] *= exp(constants::imag_unit * this->k_z.data[i][k] * (this->param->z_boundary - this->param->z_focus));
 			}
 			else {
-				this->e_x.data[i][j] = { 0.0, 0.0 };
-				this->e_y.data[i][j] = { 0.0, 0.0 };
+				this->e_x.data[i][k] = { 0.0, 0.0 };
+				this->e_y.data[i][k] = { 0.0, 0.0 };
 			}
 		}
 	}
@@ -115,12 +115,12 @@ void lbcs_2d::calculate_transverse_electric_field() {
 
 void lbcs_2d::calculate_longitudinal_electric_field() {
 	for (auto i = 0; i < this->param->nx; i++) {
-		for (auto j = 0; j < this->param->nt; j++) {
-			if (this->k_z.data[i][j] > 0) {
-				this->e_z.data[i][j] = -(this->k_x[i] * this->e_x.data[i][j]) / this->k_z.data[i][j];
+		for (auto k = 0; k < this->param->nt; k++) {
+			if (this->k_z.data[i][k] > 0) {
+				this->e_z.data[i][k] = -(this->k_x[i] * this->e_x.data[i][k]) / this->k_z.data[i][k];
 			}
 			else {
-				this->e_z.data[i][j] = { 0.0, 0.0 };
+				this->e_z.data[i][k] = { 0.0, 0.0 };
 			}
 		}
 	}
@@ -128,16 +128,16 @@ void lbcs_2d::calculate_longitudinal_electric_field() {
 
 void lbcs_2d::calculate_magnetic_field() {
 	for (auto i = 0; i < this->param->nx; i++) {
-		for (auto j = 0; j < this->param->nt; j++) {
-			if (this->k_z.data[i][j] > 0) {
-				this->b_x.data[i][j] = (pow(this->k_x[i], 2) - pow(this->omega[j] / constants::c, 2) * this->e_y.data[i][j]) / (this->omega[j] * this->k_z.data[i][j]);
-				this->b_y.data[i][j] = pow(this->omega[j] / constants::c, 2) * this->e_x.data[i][j] / (this->omega[j] * this->k_z.data[i][j]);
-				this->b_z.data[i][j] = this->k_x[i] * this->e_y.data[i][j] / this->omega[j];
+		for (auto k = 0; k < this->param->nt; k++) {
+			if (this->k_z.data[i][k] > 0) {
+				this->b_x.data[i][k] = (pow(this->k_x[i], 2) - pow(this->omega[k] / constants::c, 2) * this->e_y.data[i][k]) / (this->omega[k] * this->k_z.data[i][k]);
+				this->b_y.data[i][k] = pow(this->omega[k] / constants::c, 2) * this->e_x.data[i][k] / (this->omega[k] * this->k_z.data[i][k]);
+				this->b_z.data[i][k] = this->k_x[i] * this->e_y.data[i][k] / this->omega[k];
 			}
 			else {
-				this->b_x.data[i][j] = { 0.0, 0.0 };
-				this->b_y.data[i][j] = { 0.0, 0.0 };
-				this->b_z.data[i][j] = { 0.0, 0.0 };
+				this->b_x.data[i][k] = { 0.0, 0.0 };
+				this->b_y.data[i][k] = { 0.0, 0.0 };
+				this->b_z.data[i][k] = { 0.0, 0.0 };
 			}
 		}
 	}
