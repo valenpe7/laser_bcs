@@ -29,18 +29,20 @@ void fft::destroy_plan() {
 }
 
 std::vector<complex> tools::array_to_vec(view_1d view) {
+	size_t counter = 0;
 	std::vector<complex> vec(view.shape()[0]);
 	for (size_t i = 0; i < view.shape()[0]; i++) {
-		vec.push_back(view[i]);
+		vec[counter++] = view[i];
 	}
 	return vec;
 }
 
 std::vector<complex> tools::array_to_vec(view_2d view) {
+	size_t counter = 0;
 	std::vector<complex> vec(view.shape()[0] * view.shape()[1]);
 	for (size_t i = 0; i < view.shape()[0]; i++) {
 		for (size_t j = 0; j < view.shape()[1]; j++) {
-			vec.push_back(view[i][j]);
+			vec[counter++] = view[i][j];
 		}
 	}
 	return vec;
@@ -63,21 +65,23 @@ void tools::vec_to_array(view_2d& view, std::vector<complex> vec) {
 }
 
 std::vector<double> tools::get_real(m_array<complex, 2> field, std::array<int, 2> size) {
+	size_t counter = 0;
 	std::vector<double> real_part(size[0] * size[1]);
 	for (auto j = 0; j < size[1]; j++) {
 		for (auto i = 0; i < size[0]; i++) {
-			real_part.push_back(std::real(field.data[i][j]));
+			real_part[counter++] = std::real(field.data[i][j]);
 		}
 	}
 	return real_part;
 }
 
 std::vector<double> tools::get_real(m_array<complex, 3> field, std::array<int, 3> size) {
+	size_t counter = 0;
 	std::vector<double> real_part(size[0] * size[1] * size[2]);
 	for (auto k = 0; k < size[2]; k++) {
 		for (auto j = 0; j < size[1]; j++) {
 			for (auto i = 0; i < size[0]; i++) {
-				real_part.push_back(std::real(field.data[i][j][k]));
+				real_part[counter++] = std::real(field.data[i][j][k]);
 			}
 		}
 	}
