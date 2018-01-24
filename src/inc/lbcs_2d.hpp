@@ -5,7 +5,7 @@
 
 class lbcs_2d {
 public:
-	lbcs_2d(param_2d param);
+	lbcs_2d(param_2d* param);
 	void calculate_fields(std::string output_path);
 	~lbcs_2d() = default;
 private:
@@ -18,7 +18,7 @@ private:
 	void normalize(m_array<complex, 2>& field) const;
 	void dump_field(m_array<complex, 2> field, std::string output_path) const;
 	void dump_to_shared_file(m_array<complex, 2> field, std::array<int, 4> local_extent, std::array<int, 4> global_extent, std::string filename) const;
-	std::unique_ptr<param_2d> param;
+	param_2d* param;
 	m_array<complex, 2> e_x;
 	m_array<complex, 2> e_y;
 	m_array<complex, 2> e_z;

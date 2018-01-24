@@ -5,7 +5,7 @@
 
 class lbcs_3d {
 public:
-	lbcs_3d(param_3d param);
+	lbcs_3d(param_3d* param);
 	void calculate_fields(std::string output_path);
 	~lbcs_3d() = default;
 private:
@@ -18,7 +18,7 @@ private:
 	void normalize(m_array<complex, 3>& field) const;
 	void dump_field(m_array<complex, 3> field, std::string output_path) const;
 	void dump_to_shared_file(m_array<complex, 3> field, std::array<int, 6> local_extent, std::array<int, 6> global_extent, std::string filename) const;
-	std::unique_ptr<param_3d> param;
+	param_3d* param;
 	m_array<complex, 3> e_x;
 	m_array<complex, 3> e_y;
 	m_array<complex, 3> e_z;

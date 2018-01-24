@@ -6,8 +6,8 @@
 
 #include "inc/lbcs_2d.hpp"
 
-lbcs_2d::lbcs_2d(param_2d param) {
-	this->param = std::make_unique<param_2d>(param);
+lbcs_2d::lbcs_2d(param_2d* param) {
+	this->param = param;
 	this->e_x.data.resize(boost::extents[this->param->nx][this->param->nt]);
 	this->e_x.name = "e_x";
 	this->e_x.calculated = false;
