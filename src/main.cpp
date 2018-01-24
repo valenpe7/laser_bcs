@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <chrono>
 #ifdef _DEBUG
+	#include <chrono>
 	#include <mpi.h>
 #endif
 
