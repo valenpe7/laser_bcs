@@ -41,3 +41,10 @@ namespace tools {
 	std::vector<double> get_real(m_array<complex, 2> field, std::array<int, 2> size);
 	std::vector<double> get_real(m_array<complex, 3> field, std::array<int, 3> size);
 }
+
+template <typename T, int N>
+void tools::multiply_array(m_array<T, N>& field, const double scalar) {
+	for (size_t i = 0; i < field.data.num_elements(); i++) {
+		field.data.data()[i] *= scalar;
+	}
+}

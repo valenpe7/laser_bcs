@@ -28,13 +28,6 @@ void fft::destroy_plan() {
 	fftw_destroy_plan(plan);
 }
 
-template <typename T, int N>
-void tools::multiply_array(m_array<T, N>& field, const double scalar) {
-	for (size_t i = 0; i < field.data.num_elements(); i++) {
-		field.data.data()[i] *= scalar;
-	}
-}
-
 std::vector<complex> tools::array_to_vec(view_1d view) {
 	std::vector<complex> vec(view.shape()[0]);
 	for (size_t i = 0; i < view.shape()[0]; i++) {
