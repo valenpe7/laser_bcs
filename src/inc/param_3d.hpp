@@ -8,7 +8,7 @@ class param_3d {
 public:
 	param_3d() = default;
 	void set_domain(int rank, int size, double z_boundary, double z_focus, double x_min, double x_max, int nx, double y_min, double y_max, int ny, int cpml, double t_max, double dx, double dy, double dt);
-	void set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int direction, int id, double phase);
+	void set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double y_0, double omega, double amp, double w_0, int order, int direction, int id, double phase);
 	~param_3d() = default;
 private:
 	int rank;
@@ -43,6 +43,7 @@ private:
 	double y_0;
 	double amp;
 	double w_0;
+    int order;
 	int direction;
 	int id;
 	double phase;

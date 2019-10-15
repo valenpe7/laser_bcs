@@ -77,8 +77,8 @@ void lbcs_3d::prescribe_field_at_focus(m_array<complex, 3>& field) const {
 			for (auto k = 0; k < this->param->nt; k++) {
 				if ((this->param->t_coord[k] - this->param->time_shift) >= this->param->t_start && (this->param->t_coord[k] - this->param->time_shift) <= this->param->t_end) {
 					field.data[i][j][k] = { this->param->amp * exp(
-						- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, 2)
-						- pow((this->param->y_coord[j] - this->param->y_0) / this->param->w_0, 2)
+						- pow((this->param->x_coord[i] - this->param->x_0) / this->param->w_0, this->param->order)
+						- pow((this->param->y_coord[j] - this->param->y_0) / this->param->w_0, this->param->order)
 						- pow((this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) * (2.0 * sqrt(log(2.0))) / this->param->fwhm_time, 2)) 
 						* cos(this->param->omega * (this->param->t_coord[k] - this->param->t_0 - this->param->time_shift) + this->param->phase), 0.0 };
 				}

@@ -44,8 +44,8 @@ void param_2d::set_domain(int rank, int size, double z_boundary, double z_focus,
 	}
 }
 
-void param_2d::set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double omega, double amplitude, double w_0, int direction, int id, double phase) {
-	if (t_start > t_end || fwhm_time < 0 || omega < 0 || amplitude < 0 || w_0 < 2.0 * constants::c / omega) {
+void param_2d::set_laser(double t_start, double t_end, double fwhm_time, double t_0, double x_0, double omega, double amplitude, double w_0, int order, int direction, int id, double phase) {
+	if (t_start > t_end || fwhm_time < 0 || omega < 0 || amplitude < 0 || w_0 < 2.0 * constants::c / omega || order < 2) {
 		std::cerr << "error: bad value" << std::endl;
 		return;
 	}
@@ -57,6 +57,7 @@ void param_2d::set_laser(double t_start, double t_end, double fwhm_time, double 
 	this->omega = omega;
 	this->amplitude = amplitude;
 	this->w_0 = w_0;
+    this->order = order;
 	this->direction = direction;
 	this->id = id;
 	this->phase = phase;
